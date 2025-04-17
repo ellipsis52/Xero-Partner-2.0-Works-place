@@ -1,0 +1,4 @@
+export default {
+  entry: ['./source/main.ts'], // Assurez-vous que le chemin est correct
+  // autres options
+};

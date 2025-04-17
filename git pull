@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# 📁 Répertoire contenant les projets "client"
+CLIENT_DIR=~/mes_projets/client
+
+# 🔐 Clé OpenAI
+OPENAI_KEY="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"
+
+# 🔁 Pour chaque sous-dossier (projet) dans client/
+for dir in "$CLIENT_DIR"/*/; do
+  if [ -d "$dir/.git" ]; then
+    echo "🪄 Ajout du hook dans : $dir"
+
+    HOOK_PATH="$dir/.git/hooks/post-merge"
+
+    cat <<EOF > "$HOOK_PATH"
+#!/bin/bash
+# Hook Git post-merge pour injecter la clé OpenAI
+OPENAI_KEY="$OPENAI_KEY"
+ENV_FILE="\$(git rev-parse --show-toplevel)/.env"
+echo "OPENAI_API_KEY=\$OPENAI_KEY" > "\$ENV_FILE"
+GITIGNORE_FILE="\$(git rev-parse --show-toplevel)/.gitignore"
+if [ ! -f "\$GITIGNORE_FILE" ] || ! grep -qxF ".env" "\$GITIGNORE_FILE"; then
+  echo ".env" >> "\$GITIGNORE_FILE"
+fi
+EOF
+
+    chmod +x "$HOOK_PATH"
+    echo "✅ Hook post-merge prêt dans $dir"
+  fi
+done
+
+echo "🌟 Tous les projets 'client' ont reçu le pouvoir du hook."
+nano installer_hooks_client.sh
+chmod +x installer_hooks_client.sh
+./installer_hooks_client.sh

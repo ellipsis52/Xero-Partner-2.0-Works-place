@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# 👋 Crée le dossier source et déplace main.ts
+mkdir -p source
+mv main.ts source/ 2>/dev/null
+
+# 🧼 Supprime les anciens fichiers si besoin
+rm -f package.json package-lock.json tsconfig.json vercel.json
+
+# 🧱 Initialise npm et installe les dépendances
+npm init -y
+
+npm install express cors
+npm install --save-dev tsup @types/express @types/node typescript
+
+# ✏️ Met à jour package.json
+cat > package.json <<EOF
+{
+  "name": "xero-partner",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/main.cjs",
+  "scripts": {
+    "build": "tsup source/main.ts --format cjs"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.8.10",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.3"
+  }
+}
+EOF
+
+# 🔧 Crée tsconfig.json
+cat > tsconfig.json <<EOF
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "allowJs": true,
+    "noEmit": true
+  },
+  "include": ["source"]
+}
+EOF
+
+# 📦 Build
+npm run build
+
+# ⚙️ Crée vercel.json
+cat > vercel.json <<EOF
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "dist/main.cjs",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "dist/main.cjs"
+    }
+  ]
+}
+EOF
+
+# 🚀 Déploiement sur Vercel
+vercel --prod
+./setup.sh
+
+

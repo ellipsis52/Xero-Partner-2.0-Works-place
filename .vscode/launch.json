@@ -1,0 +1,34 @@
+{
+    // Utilisez IntelliSense pour en savoir plus sur les attributs possibles.
+    // Pointez pour afficher la description des attributs existants.
+    // Pour plus d'informations, visitez : https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": Run Current File'[
+        
+        
+        {
+            "name": "(lldb) Lancer",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "xero partner 2.0 ",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "lldb"
+        }
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/.vercel/saferpay-service/backend/.vscode/saferpay-okta-demo/frontend/app.js",
+            "outFiles": [
+                "${workspaceFolder}/**/*.js"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,184 @@
+chmod +x inject_openai_key.sh
+
+./inject_openai_key.sh
+
+
+#!/bin/bash
+
+# Ton précieux sésame
+OPENAI_KEY="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"
+
+# Fichier .env à protéger
+ENV_FILE="$(git rev-parse --show-toplevel)/.env"
+
+echo "🔐 Post-merge : Mise à jour de la clé OpenAI..."
+
+# Injecte ou écrase le .env
+echo "OPENAI_API_KEY=$OPENAI_KEY" > "$ENV_FILE"
+
+# Assure qu’il est ignoré par Git
+GITIGNORE_FILE="$(git rev-parse --show-toplevel)/.gitignore"
+if [ ! -f "$GITIGNORE_FILE" ] || ! grep -qxF ".env" "$GITIGNORE_FILE"; then
+  echo ".env" >> "$GITIGNORE_FILE"
+fi
+
+echo "✅ Clé injectée dans $ENV_FILE"
+chmod +x post-merge
+
+nano installer_hooks_client.sh
+chmod +x installer_hooks_client.sh
+
+
+./installer_hooks_client.sh
+
+TO_EMAIL="ton.email@domaine.com"
+SUBJECT="🧠 Clé OpenAI injectée"
+BODY="La clé OpenAI a été injectée avec succès dans le projet: $(basename $(git rev-parse --show-toplevel))."
+
+echo "$BODY" | mail -s "$SUBJECT" "$TO_EMAIL"
+#!/bin/bash
+
+# 🔮 Chemin vers les projets "client"
+CLIENT_DIR=~/mes_projets/client
+
+# 🪙 Clé secrète OpenAI
+OPENAI_KEY="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"
+
+# 💌 Email de notification
+EMAIL="nagle@ik.me"
+
+# 🌐 Webhook Discord (optionnel — remplace si tu en as un)
+WEBHOOK_URL="https://discord.com/api/webhooks/TON_WEBHOOK_ICI" # <-- à remplacer
+
+# 🌀 Pour chaque projet client
+for dir in "$CLIENT_DIR"/*/; do
+  if [ -d "$dir/.git" ]; then
+    echo "🔧 Configuration du projet : $dir"
+
+    ENV_FILE="$dir/.env"
+    GITIGNORE_FILE="$dir/.gitignore"
+    HOOK_PATH="$dir/.git/hooks/post-merge"
+
+    # Injecte immédiatement la clé
+    echo "OPENAI_API_KEY=$OPENAI_KEY" > "$ENV_FILE"
+    if [ ! -f "$GITIGNORE_FILE" ] || ! grep -qxF ".env" "$GITIGNORE_FILE"; then
+      echo ".env" >> "$GITIGNORE_FILE"
+    fi
+
+    # 🪄 Crée le hook post-merge
+    cat <<EOF > "$HOOK_PATH"
+#!/bin/bash
+
+OPENAI_KEY="$OPENAI_KEY"
+ENV_FILE="\$(git rev-parse --show-toplevel)/.env"
+GITIGNORE_FILE="\$(git rev-parse --show-toplevel)/.gitignore"
+
+echo "OPENAI_API_KEY=\$OPENAI_KEY" > "\$ENV_FILE"
+if [ ! -f "\$GITIGNORE_FILE" ] || ! grep -qxF ".env" "\$GITIGNORE_FILE"; then
+  echo ".env" >> "\$GITIGNORE_FILE"
+fi
+
+# ✉️ Email
+PROJECT_NAME=\$(basename \$(git rev-parse --show-toplevel))
+echo "Clé OpenAI injectée dans le projet \$PROJECT_NAME." | mail -s "🔑 Clé API Injectée - \$PROJECT_NAME" "$EMAIL"
+
+# 🔔 Discord
+WEBHOOK_URL="$WEBHOOK_URL"
+if [[ "\$WEBHOOK_URL" != "https://discord.com/api/webhooks/TON_WEBHOOK_ICI" ]]; then
+  PAYLOAD="{\"content\": \"✅ Clé OpenAI injectée dans \\\`\$PROJECT_NAME\\\`.\"}"
+  curl -H "Content-Type: application/json" -X POST -d "\$PAYLOAD" "\$WEBHOOK_URL" >/dev/null 2>&1
+fi
+EOF
+
+    chmod +x "$HOOK_PATH"
+    echo "✅ Hook magique installé pour $dir"
+  fi
+done
+
+echo "🌟 Tous les projets 'client' sont maintenant enchantés."
+#!/bin/bash
+
+# 🔮 Chemin vers les projets "client"
+CLIENT_DIR=~/mes_projets/client
+
+# 🪙 Clé secrète OpenAI
+OPENAI_KEY="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"
+
+# 💌 Email de notification
+EMAIL="nagle@ik.me"
+
+# 🌐 Webhook Discord (optionnel — remplace si tu en as un)
+WEBHOOK_URL="https://discord.com/api/webhooks/TON_WEBHOOK_ICI" # <-- à remplacer
+
+# 🌀 Pour chaque projet client
+for dir in "$CLIENT_DIR"/*/; do
+  if [ -d "$dir/.git" ]; then
+    echo "🔧 Configuration du projet : $dir"
+
+    ENV_FILE="$dir/.env"
+    GITIGNORE_FILE="$dir/.gitignore"
+    HOOK_PATH="$dir/.git/hooks/post-merge"
+
+    # Injecte immédiatement la clé
+    echo "OPENAI_API_KEY=$OPENAI_KEY" > "$ENV_FILE"
+    if [ ! -f "$GITIGNORE_FILE" ] || ! grep -qxF ".env" "$GITIGNORE_FILE"; then
+      echo ".env" >> "$GITIGNORE_FILE"
+    fi
+
+    # 🪄 Crée le hook post-merge
+    cat <<EOF > "$HOOK_PATH"
+#!/bin/bash
+
+OPENAI_KEY="$OPENAI_KEY"
+ENV_FILE="\$(git rev-parse --show-toplevel)/.env"
+GITIGNORE_FILE="\$(git rev-parse --show-toplevel)/.gitignore"
+
+echo "OPENAI_API_KEY=\$OPENAI_KEY" > "\$ENV_FILE"
+if [ ! -f "\$GITIGNORE_FILE" ] || ! grep -qxF ".env" "\$GITIGNORE_FILE"; then
+  echo ".env" >> "\$GITIGNORE_FILE"
+fi
+
+# ✉️ Email
+PROJECT_NAME=\$(basename \$(git rev-parse --show-toplevel))
+echo "Clé OpenAI injectée dans le projet \$PROJECT_NAME." | mail -s "🔑 Clé API Injectée - \$PROJECT_NAME" "$EMAIL"
+
+# 🔔 Discord
+WEBHOOK_URL="$WEBHOOK_URL"
+if [[ "\$WEBHOOK_URL" != "https://discord.com/api/webhooks/TON_WEBHOOK_ICI" ]]; then
+  PAYLOAD="{\"content\": \"✅ Clé OpenAI injectée dans \\\`\$PROJECT_NAME\\\`.\"}"
+  curl -H "Content-Type: application/json" -X POST -d "\$PAYLOAD" "\$WEBHOOK_URL" >/dev/null 2>&1
+fi
+EOF
+
+    chmod +x "$HOOK_PATH"
+    echo "✅ Hook magique installé pour $dir"
+  fi
+done
+
+echo "🌟 Tous les projets 'client' sont maintenant enchantés."
+chmod +x inject_hooks_clients.sh
+
+./inject_hooks_clients.sh
+
+mkdir -p ~/scripts
+mv inject_hooks_clients.sh ~/scripts/inject_hooks_clients.sh
+chmod +x ~/scripts/inject_hooks_clients.sh
+crontab -e
+
+
+0 2 * * * /bin/bash ~/scripts/inject_hooks_clients.sh >> ~/scripts/inject_hooks.log 2>&1
+
+#!/bin/bash
+
+# Chemin vers le fichier .env
+ENV_FILE="$(git rev-parse --show-toplevel)/.env"
+
+# 🔍 Supprime la ligne contenant OPENAI_API_KEY
+if [ -f "$ENV_FILE" ]; then
+  grep -v "^OPENAI_API_KEY=" "$ENV_FILE" > "$ENV_FILE.tmp" && mv "$ENV_FILE.tmp" "$ENV_FILE"
+fi
+
+# 🧠 Log facultatif
+echo "🔐 Clé OpenAI retirée de .env avant push"
+npm install @heroicons/react
+

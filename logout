@@ -1,0 +1,54 @@
+// src/pages/Dashboard.jsx
+import { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
+export default function Dashboard() {
+  const [items, setItems] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 10;
+
+  const { token, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const fetchItems = async (page) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/items?page=${page}&limit=${limit}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      setItems(data.data);
+      setTotalPages(Math.ceil(data.total / limit));
+    } catch (err) {
+      console.error('Erreur de chargement :', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchItems(page);
+  }, [page]);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  return (
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Dashboard</h2>
+        <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded">
+          Déconnexion
+        </button>
+      </div>
+
+      {/* ... items + pagination ici ... */}
+    </div>
+  );
+}
+<div className="relative isolate overflow-hidden bg-gray-900 py-16 sm:py-24 lg:py-32 animate-fade-in">
+  {/* ... rest of the code ... */}
+</div>

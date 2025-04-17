@@ -1,0 +1,41 @@
+const sendMessage = async () => {
+  setState({ ...state, loading: true, log: "", reply: "", status: null });
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000); // Timeout de 10s
+
+    console.log("📤 Envoi du message à IPRANET:", state.message);
+
+    const res = await axios.post(
+      "https://app.netmanagement.online/api/chat",
+      { message: state.message },
+      { signal: controller.signal }
+    );
+    clearTimeout(timeout);
+
+    console.log("🌐 Réponse complète du serveur :", JSON.stringify(res, null, 2));
+    console.log("📩 Réponse d'IPRANET :", res?.data?.reply ?? "⚠️ Aucune réponse trouvée.");
+
+    if (res?.data?.reply && typeof res.data.reply === "string") {
+      setState({
+        ...state,
+        reply: res.data.reply,
+        log: `✅ Succès: ${JSON.stringify(res.data)}`,
+        status: "success",
+      });
+    } else {
+      setState({
+        ...state,
+        reply: "❌ IPRANET n'a pas compris la réponse du serveur.",
+        log: `⚠️ Réponse inattendue du serveur.`,
+        status: "warning",
+      });
+    }
+  } catch (error) {
+    console.error("🔥 Erreur détectée :", error); // <-- LOG COMPLET DE L'ERREUR
+    handleError(error);
+  } finally {
+    setState((prev) => ({ ...prev, loading: false }));
+  }
+};

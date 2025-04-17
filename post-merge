@@ -1,0 +1,79 @@
+nano post-merge
+#!/bin/bash
+
+# Ton précieux sésame
+OPENAI_KEY="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"
+
+# Fichier .env à protéger
+ENV_FILE="$(git rev-parse --show-toplevel)/.env"
+
+echo "🔐 Post-merge : Mise à jour de la clé OpenAI..."
+
+# Injecte ou écrase le .env
+echo "OPENAI_API_KEY=$OPENAI_KEY" > "$ENV_FILE"
+
+# Assure qu’il est ignoré par Git
+GITIGNORE_FILE="$(git rev-parse --show-toplevel)/.gitignore"
+if [ ! -f "$GITIGNORE_FILE" ] || ! grep -qxF ".env" "$GITIGNORE_FILE"; then
+  echo ".env" >> "$GITIGNORE_FILE"
+fi
+
+echo "✅ Clé injectée dans $ENV_FILE"
+#!/bin/bash
+
+# 🔐 Clé API OpenAI
+OPENAI_KEY="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"
+
+# 📜 Fichiers
+ENV_FILE="$(git rev-parse --show-toplevel)/.env"
+GITIGNORE_FILE="$(git rev-parse --show-toplevel)/.gitignore"
+
+# 🔧 Injecte la clé
+echo "OPENAI_API_KEY=$OPENAI_KEY" > "$ENV_FILE"
+
+if [ ! -f "$GITIGNORE_FILE" ] || ! grep -qxF ".env" "$GITIGNORE_FILE"; then
+  echo ".env" >> "$GITIGNORE_FILE"
+fi
+
+# 🔔 Notification Discord
+WEBHOOK_URL="https://discord.com/api/webhooks/TON_WEBHOOK_ID"
+
+PAYLOAD="{
+  \"content\": \"✅ Clé OpenAI injectée avec succès dans \`$(basename $(git rev-parse --show-toplevel))\`.\"
+}"
+
+curl -H "Content-Type: application/json" \
+     -X POST \
+     -d "$PAYLOAD" \
+     "$WEBHOOK_URL"
+TO_EMAIL="ton.email@domaine.com"
+SUBJECT="🧠 Clé OpenAI injectée"
+BODY="La clé OpenAI a été injectée avec succès dans le projet: $(basename $(git rev-parse --show-toplevel))."
+
+echo "$BODY" | mail -s "$SUBJECT" "$TO_EMAIL"
+defaults
+auth           on
+tls            on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile        ~/.msmtp.log
+
+account gmail
+host smtp.gmail.com
+port 587
+from ton.email@gmail.com
+user ton.email@gmail.com
+password TON_MOT_DE_PASSE_APPLI
+
+account default : gmail
+#!/bin/bash
+
+# Chemin vers le fichier .env
+ENV_FILE="$(git rev-parse --show-toplevel)/.env"
+
+# 🔍 Supprime la ligne contenant OPENAI_API_KEY
+if [ -f "$ENV_FILE" ]; then
+  grep -v "^OPENAI_API_KEY=" "$ENV_FILE" > "$ENV_FILE.tmp" && mv "$ENV_FILE.tmp" "$ENV_FILE"
+fi
+
+# 🧠 Log facultatif
+echo "🔐 Clé OpenAI retirée de .env avant push"

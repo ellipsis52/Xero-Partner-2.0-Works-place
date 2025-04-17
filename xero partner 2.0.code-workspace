@@ -1,0 +1,43 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/.git": true,
+			"**/.svn": true,
+			"**/.hg": true,
+			"**/CVS": true,
+			"**/.DS_Store": true,
+			"**/Thumbs.db": true,
+			"**/node_modules": true
+		}
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Attach to Kubernetes Pod (NodeJS)",
+				"type": "cloudcode.kubernetes",
+				"request": "attach",
+				"language": "Node",
+				"debugPort": 9229,
+				"podSelector": {
+					"app": "deployment-name"
+				},
+				"localRoot": "${workspaceFolder}",
+				"remoteRoot": "Path to the Remote Directory Containing the Program"
+			},
+
+			{
+				"command": "npm start",
+				"name": "Run npm start",
+				"request": "launch",
+				"type": "node-terminal"
+			}
+
+		]
+	}
+}

@@ -1,0 +1,58 @@
+// src/context/AuthContext.jsx
+import { createContext, useState, useEffect } from 'react';
+
+export const AuthContext = createContext();
+
+export function AuthProvider({ children }) {
+  const [token, setToken] = useState(localStorage.getItem('token') || null);
+
+  const login = (newToken) => {
+    setToken(newToken);
+    localStorage.setItem('token', newToken);
+  };
+
+  const logout = () => {
+    setToken(null);
+    localStorage.removeItem('token');
+  };
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) setToken(storedToken);
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ token, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// src/components/PrivateRoute.jsx
+import { useContext } from 'react';
+import { Navigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+
+export default function PrivateRoute({ children }) {
+  const { token } = useContext(AuthContext);
+  return token ? children : <Navigate to="/login" />;
+}
+<div className="bg-gray-50 py-24 sm:py-32 animate-fade-in">
+  {/* ... bento content ... */}
+</div>
+// src/context/AuthContext.js
+import React, { createContext, useContext, useState } from "react";
+
+const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null); // Exemple simple d'état pour l'utilisateur
+
+  return (
+    <AuthContext.Provider value={{ user, setUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => useContext(AuthContext);

@@ -1,0 +1,116 @@
+// src/pages/Dashboard.jsx
+import { useEffect, useState } from 'react';
+
+export default function Dashboard() {
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch('http://localhost:5000/api/items', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      const data = await res.json();
+      setItems(data);
+    };
+    fetchData();
+  }, []);
+
+  return (
+    <div className="p-6">
+      <h2 className="text-xl font-bold mb-4">Tableau de bord</h2>
+      <ul className="space-y-2">
+        {items.map((item) => (
+          <li key={item.id} className="border p-3 rounded shadow-sm">
+            {item.title} - {item.location}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+// src/pages/Dashboard.jsx
+import { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
+export default function Dashboard() {
+  const [items, setItems] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 10;
+
+  const { token, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const fetchItems = async (page) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/items?page=${page}&limit=${limit}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      setItems(data.data);
+      setTotalPages(Math.ceil(data.total / limit));
+    } catch (err) {
+      console.error('Erreur de chargement :', err);
+    }
+  };
+
+  useEffect(() => {
+    if (token) fetchItems(page);
+  }, [page, token]);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  if (!token) {
+    return <div>Chargement...</div>; // Ou un loader
+  }
+
+  return (
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Dashboard</h2>
+        <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded">
+          Déconnexion
+        </button>
+      </div>
+
+      <ul className="space-y-2 mb-6">
+        {items.map((item) => (
+          <li key={item.id} className="border p-3 rounded shadow-sm">
+            <strong>{item.title}</strong> – {item.location}
+          </li>
+        ))}
+      </ul>
+
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => setPage((p) => Math.max(p - 1, 1))}
+          disabled={page === 1}
+          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+        >
+          Précédent
+        </button>
+
+        <span className="text-sm text-gray-700">
+          Page <strong>{page}</strong> sur <strong>{totalPages}</strong>
+        </span>
+
+        <button
+          onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+          disabled={page === totalPages}
+          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+        >
+          Suivant
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,3 @@
+~/mes_projets/*/~/mes_projets/*/for dir in ~/mes_projets/*/; do
+  echo "OPENAI_API_KEY=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" > "$dir/.env"
+done
