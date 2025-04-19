@@ -1,0 +1,40 @@
+import React from 'react';
+import cvIcon from './assets/icons/cv-icon.svg';  // Remplace avec le chemin correct
+
+const IconComponent = () => {
+  return (
+    <div>
+      <img src={cvIcon} alt="Cv Icon" />
+      <p>Votre texte ici</p>
+    </div>
+  );
+};
+
+export default IconComponent;
+
+import React from 'react';
+
+const IconComponent = () => {
+  return (
+    <div>
+      <img 
+        src="https://imageURL_icone_de_Flaticon.svg" 
+        alt="Cv Icon"
+      />
+      <p>Votre texte ici</p>
+    </div>
+  );
+};
+
+export default IconComponent;
+<a href="https://www.flaticon.com/fr/icones-gratuites/cv-et-cv" title="cv et cv icônes">Cv et cv icônes créées par Bamart - Flaticon</a>
+
+<a href="https://www.flaticon.com/fr/icones-gratuites/travail-en-equipe" title="travail en équipe icônes">Travail en équipe icônes créées par Bamart - Flaticon</a>
+
+<a href="https://www.flaticon.com/fr/icones-gratuites/selection-des-candidats" title="sélection des candidats icônes">Sélection des candidats icônes créées par Bamart - Flaticon</a>
+
+<a href="https://www.flaticon.com/fr/icones-gratuites/travail-en-equipe" title="travail en équipe icônes">Travail en équipe icônes créées par Bamart - Flaticon</a>
+
+<a href="https://www.flaticon.com/fr/icones-gratuites/travail-en-equipe" title="travail en équipe icônes">Travail en équipe icônes créées par Bamart - Flaticon</a>
+
+<a href="https://www.flaticon.com/fr/icones-gratuites/travail-en-equipe" title="travail en équipe icônes">Travail en équipe icônes créées par Bamart - Flaticon</a>
